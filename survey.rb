@@ -96,12 +96,12 @@ post "/comment/:lastname" do
     erb :comment
   else
     session[:comment] = params[:comment]
-    redirect "/edit"
+    redirect "/survey/edit"
   end
 end
 
 # update survey -------------
-get "/edit" do
+get "/survey/edit" do
   @lastname = session[:last_name]
   erb :edit
 end
