@@ -1,0 +1,11 @@
+<html>
+  <title>Survey</title>
+  <body>
+    <% if session[:message] %>
+    <%# session.delete[:message] returns the value of the message key 
+    from the session hash, then deletes the key-value pair.%>
+      <p class="message"><%= session.delete(:message) %></p>
+    <% end %>
+    <%== yield %>
+  </body>
+</html>

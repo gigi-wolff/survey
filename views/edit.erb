@@ -1,0 +1,12 @@
+  <p><h3> Your Survey Entries: </h3></p>
+
+  <%=  "Assessment difficulty level: #{session[:difficulty]}" %>
+  <a class="edit" href="/difficulty/edit">Edit</a>
+
+  <p>Comment: <%= session[:comment] %>
+    <a class="edit" href="/comment/<%= session[:last_name] %>">Edit</a>
+  </p>
+
+  <form action="/receipt" method="post">
+     <button type="submit">Save</button>
+  </form>
