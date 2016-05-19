@@ -7,7 +7,7 @@
 
   <p><label for="comment"><%= session[:first_name] %>: please add your comments:</label></p>
   <%# x = "abc" || nil    will set x to non-nil value%>
-  <textarea name="comment" cols="100" rows="5" value="<%= params[:comment] || @comment %>" ></textarea>
+  <input type="text" style="width: 300px; height: 100px;" name="comment" value=<%= params[:comment] || @comment %> >
 
   <p><button type="submit">Submit</button></p>
 </form>

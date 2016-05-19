@@ -114,7 +114,7 @@ post "/survey/create_review/:last_name" do
   end
 end
 
-# show review (choose edit or save) -------------
+# show review (choose update or save) -------------
 get "/survey/show_review/:last_name" do
   @last_name = params[:last_name] #grab last_name from url
   @difficulty = session[:difficulty]
@@ -122,27 +122,27 @@ get "/survey/show_review/:last_name" do
   erb :show_review
 end
 
-# edit review -------------------
-get "/survey/edit_review/:last_name" do
+# update review -------------------
+get "/survey/update_review/:last_name" do
   @last_name = params[:last_name]
   @difficulty = session[:difficulty]
   @comment = session[:comment]
-  binding.pry
-  erb :edit_review
+  erb :update_review
 end
 
-post "/survey/edit_review/:last_name" do
+post "/survey/update_review/:last_name" do
   error = review_error_message
+  @last_name = params[:last_name]
 
   if error
     session[:error] = "Please enter: #{error}"
     status 422
-    erb :edit_review    
+    erb :update_review    
   else
     session[:comment] = params[:comment]
     session[:difficulty] = params[:difficulty]
     session[:success] = "The review has been updated."
-    redirect "/survey/show_review/#{session[:last_name]}"
+    redirect "/survey/show_review/#{@last_name}"
   end
 end
 
