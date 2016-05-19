@@ -14,13 +14,19 @@ configure do
   set :erb, :escape_html => true
 end
 
-def error_message
+def user_error_message
   message = ""
   message += "first name," if params[:first_name] == ""
-  message += " last name," if params[:last_name] == ""
-  message += " 
+  message += " last name" if params[:last_name] == ""
 
-  difficulty range 1 through 5" unless ("1".."5").cover?(params[:difficulty])
+  message == "" ? nil : message.chomp(',')
+end
+
+def review_error_message
+  message = ""
+  message = "difficulty level between 1 through 5(hardest)," unless (1..5).cover?(params[:difficulty].to_i)
+  message += " comment" if params[:comment] == ""
+
   message == "" ? nil : message.chomp(',')
 end
 
@@ -41,7 +47,12 @@ def valid_user?(username, password)
 end
 
 get "/" do
-  redirect "/user/signin"
+  #redirect "/user/signin"
+  session[:first_name] = "Gigi"
+  session[:last_name] = "Wolff"
+  # None of the variables created in this action
+  # will be available to the redirected view unless they are saved in session
+  redirect "/survey/create_review/#{session[:last_name]}"
 end
 
 get "/user/signin" do
@@ -50,10 +61,10 @@ end
 
 post "/user/signin" do
   if valid_user?(params[:username], params[:password])
-    session[:message] = "Signed In"
+    session[:success] = "Signed In"
     redirect "/survey"
   else
-    session[:message] = "Invalid Username Password combination"
+    session[:error] = "Invalid Username Password combination"
     status 422
     erb :signin
   end
@@ -65,9 +76,10 @@ get "/survey" do
 end
 
 post "/survey" do
-  error = error_message
+  error = user_error_message
+
   if error
-    session[:message] = "Please enter: #{error}"
+    session[:error] = "Please enter: #{error}"
     status 422
     # Values of input fields should be set to params so we don't have to revalidate each them.
     # If it is the first render, params[:first_name] is nil, so the field will be empty. 
@@ -77,62 +89,68 @@ post "/survey" do
   else
     session[:first_name] = params[:first_name]
     session[:last_name] = params[:last_name]
-    session[:difficulty] = params[:difficulty]
     # None of the variables created in this action
     # will be available to the redirected view unless they are saved in session
-    redirect "/comment/#{session[:last_name]}" #survey successfully created goto comment action
+    redirect "/survey/create_review/#{session[:last_name]}" #survey successfully created goto comment action
   end
 end
-
-# create new comment -----------
-get "/comment/:lastname" do
-  erb :comment
+#===========start here =============
+# create new review -----------
+get "/survey/create_review/:last_name" do
+  @last_name = params[:last_name]
+  erb :create_review
 end
 
-post "/comment/:lastname" do
-  if params[:comment]==""
-    session[:message] = "Please enter a comment"
+post "/survey/create_review/:last_name" do
+  error = review_error_message
+  if error
+    session[:error] = "Please enter: #{error}"
     status 422
-    erb :comment
+    erb :create_review    
   else
     session[:comment] = params[:comment]
-    redirect "/survey/edit"
-  end
-end
-
-# update survey -------------
-get "/survey/edit" do
-  @lastname = session[:last_name]
-  erb :edit
-end
-
-get "/difficulty/edit" do
-  erb :difficulty
-end
-
-post "/difficulty/edit" do
-  if (1..5).include?(params[:difficulty].to_i)
-    session[:message] = "Difficulty level updated."
     session[:difficulty] = params[:difficulty]
-    redirect "/edit"
-  else
-    session[:message] = "Please enter a difficulty level 1 to 5(hardest)"
-    status 422
-    erb :edit
+    redirect "/survey/show_review/#{params[:last_name]}"
   end
 end
 
-post "/comment/edit" do
-  redirect "/comment/#{session[:last_name]}"
+# show review (choose edit or save) -------------
+get "/survey/show_review/:last_name" do
+  @last_name = params[:last_name] #grab last_name from url
+  @difficulty = session[:difficulty]
+  @comment = session[:comment]
+  erb :show_review
 end
 
-# show result ------------
-post "/receipt" do
-  erb :receipt
+# edit review -------------------
+get "/survey/edit_review/:last_name" do
+  @last_name = params[:last_name]
+  @difficulty = session[:difficulty]
+  @comment = session[:comment]
+  binding.pry
+  erb :edit_review
 end
 
+post "/survey/edit_review/:last_name" do
+  error = review_error_message
 
+  if error
+    session[:error] = "Please enter: #{error}"
+    status 422
+    erb :edit_review    
+  else
+    session[:comment] = params[:comment]
+    session[:difficulty] = params[:difficulty]
+    session[:success] = "The review has been updated."
+    redirect "/survey/show_review/#{session[:last_name]}"
+  end
+end
 
-
-
+# save final review ------------
+get "/survey/save_review/:last_name" do
+  @difficulty = session[:difficulty]
+  @comment = session[:comment]
+  session[:success] = "Thank you for completing this survey"
+  erb :saved_review
+end
 
