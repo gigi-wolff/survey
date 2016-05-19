@@ -103,6 +103,7 @@ end
 
 post "/survey/create_review/:last_name" do
   error = review_error_message
+  @last_name = params[:last_name]
   if error
     session[:error] = "Please enter: #{error}"
     status 422
@@ -110,7 +111,7 @@ post "/survey/create_review/:last_name" do
   else
     session[:comment] = params[:comment]
     session[:difficulty] = params[:difficulty]
-    redirect "/survey/show_review/#{params[:last_name]}"
+    redirect "/survey/show_review/#{@last_name}"
   end
 end
 
