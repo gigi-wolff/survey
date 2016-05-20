@@ -1,12 +1,12 @@
   <p><h3> Your Survey Entries: </h3></p>
 
-  <p>Difficulty level:  <%= @difficulty %></p>
-  <p>Comment: <%= @comment %></p>
+  <p>Difficulty level:  <%= session[:difficulty] %></p>
+  <p>Comment: <%= session[:comment] %></p>
 
-  <form action="/survey/save_review/<%= @last_name %>" method="get">
+  <form action="/survey/save_review/<%= session[:last_name] %>" method="get">
      <button type="submit">Save</button>
   </form>
 
-  <form action="/survey/update_review/<%= @last_name %>" method="get">
+  <form action="/survey/update_review/<%= session[:last_name] %>" method="get">
      <button type="submit">update</button>
   </form>

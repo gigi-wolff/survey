@@ -1,4 +1,3 @@
-<h5>Your response has been added: </h5><br>
-<p><%=  "Difficulty level: #{@difficulty}" %></p>
+<p><%=  "Difficulty level: #{session[:difficulty]}" %></p>
 <br>
-<p>Comment: <%= @comment %>
+<p>Comment: <%= session[:comment]%>

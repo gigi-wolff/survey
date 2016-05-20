@@ -47,12 +47,7 @@ def valid_user?(username, password)
 end
 
 get "/" do
-  #redirect "/user/signin"
-  session[:first_name] = "Gigi"
-  session[:last_name] = "Wolff"
-  # None of the variables created in this action
-  # will be available to the redirected view unless they are saved in session
-  redirect "/survey/create_review/#{session[:last_name]}"
+  redirect "/user/signin"
 end
 
 get "/user/signin" do
@@ -94,16 +89,15 @@ post "/survey" do
     redirect "/survey/create_review/#{session[:last_name]}" #survey successfully created goto comment action
   end
 end
-#===========start here =============
+
 # create new review -----------
 get "/survey/create_review/:last_name" do
-  @last_name = params[:last_name]
   erb :create_review
 end
 
 post "/survey/create_review/:last_name" do
   error = review_error_message
-  @last_name = params[:last_name]
+
   if error
     session[:error] = "Please enter: #{error}"
     status 422
@@ -111,29 +105,22 @@ post "/survey/create_review/:last_name" do
   else
     session[:comment] = params[:comment]
     session[:difficulty] = params[:difficulty]
-    redirect "/survey/show_review/#{@last_name}"
+    redirect "/survey/show_review/#{session[:last_name]}"
   end
 end
 
 # show review (choose update or save) -------------
 get "/survey/show_review/:last_name" do
-  @last_name = params[:last_name] #grab last_name from url
-  @difficulty = session[:difficulty]
-  @comment = session[:comment]
   erb :show_review
 end
 
 # update review -------------------
 get "/survey/update_review/:last_name" do
-  @last_name = params[:last_name]
-  @difficulty = session[:difficulty]
-  @comment = session[:comment]
   erb :update_review
 end
 
 post "/survey/update_review/:last_name" do
   error = review_error_message
-  @last_name = params[:last_name]
 
   if error
     session[:error] = "Please enter: #{error}"
@@ -143,15 +130,13 @@ post "/survey/update_review/:last_name" do
     session[:comment] = params[:comment]
     session[:difficulty] = params[:difficulty]
     session[:success] = "The review has been updated."
-    redirect "/survey/show_review/#{@last_name}"
+    redirect "/survey/show_review/#{session[:last_name]}"
   end
 end
 
 # save final review ------------
 get "/survey/save_review/:last_name" do
-  @difficulty = session[:difficulty]
-  @comment = session[:comment]
-  session[:success] = "Thank you for completing this survey"
+  session[:success] = "Your review has been saved."
   erb :saved_review
 end
 
