@@ -1,13 +1,11 @@
 <form method="post" action="/survey/update_review/<%= session[:last_name]%>">
 
-  <p><h3>Update your survey response:</h3></p>
-
   <p>How challenging did you find this assessment? (1=easy ... 5=difficult)</p>
-  <input type="text" name="difficulty" value=<%= params[:difficulty] || session[:difficulty] %>>
+  <input type="text" name="difficulty" maxlength="1" size="1" value=<%= params[:difficulty] || session[:difficulty] %>>
 
   <p><label for="comment"><%= session[:first_name] %>: please add your comments:</label></p>
-  <%# x = "abc" || nil    will set x to non-nil value%>
-  <input type="text" style="width: 300px; height: 100px;" name="comment" value=<%= params[:comment] || session[:comment] %> >
+  <%# x = "abc" || nil  will set x to non-nil value%>
+  <input type="text"  maxlength="100" size="100" name="comment" value="<%= params[:comment] || session[:comment] %>" >
 
   <p><button type="submit">Submit</button></p>
 </form>
