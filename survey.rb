@@ -7,6 +7,8 @@ require "tilt/erubis"
 require "yaml"
 require "bcrypt"
 
+# <input type="text"  maxlength="100" size="100" name="comment" value="<%= params[:comment] || session[:comment] %>" >
+
 
 configure do
   enable :sessions
@@ -57,7 +59,7 @@ end
 post "/user/signin" do
   if valid_user?(params[:username], params[:password])
     session[:success] = "Signed In"
-    redirect "/survey"
+    redirect "/user_info"
   else
     session[:error] = "Invalid Username Password combination"
     status 422
@@ -66,11 +68,11 @@ post "/user/signin" do
 end
 
 # create new survey entry -------
-get "/survey" do
-  erb :survey  
+get "/user_info" do
+  erb :user_info  
 end
 
-post "/survey" do
+post "/user_info" do
   error = user_error_message
 
   if error
@@ -80,7 +82,7 @@ post "/survey" do
     # If it is the first render, params[:first_name] is nil, so the field will be empty. 
     # If it is a re-render, the field will be filled in if they filled it in and empty if they didn't. 
     # This helps us to avoid having to write conditionals as it all comes for free by using params in that situation.
-    erb :survey 
+    erb :user_info
   else
     session[:first_name] = params[:first_name]
     session[:last_name] = params[:last_name]
@@ -109,7 +111,7 @@ post "/survey/create_review/:last_name" do
   end
 end
 
-# show review (choose update or save) -------------
+# show review (choose edit or save) -------------
 get "/survey/show_review/:last_name" do
   erb :show_review
 end

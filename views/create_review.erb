@@ -1,10 +1,11 @@
 <form method="post" action="/survey/create_review/<%=session[:last_name]%>">
 
-  <p>How challenging did you find this assessment? (1=easy ... 5=difficult)</p>
-  <input type="text" name="difficulty" maxlength="1" size="1" value=<%= params[:difficulty] %>>
+  <p>How challenging did you find this assessment? (1=easy ... 5=difficult)
+    <input type="text" name="difficulty" maxlength="1" size="1" value="<%= params[:difficulty] %>">
+  </p>
 
   <p><label for="comment"><%= session[:first_name] %>: please add your comments:</label></p>
-  <input type="text"  maxlength="100" size="100" name="comment" value="<%= params[:comment] %>" >
+  <textarea name="comment" cols="60" rows="10" value="<%= params[:comment] %>"></textarea>
 
   <p><button type="submit">Submit</button></p>
 </form>
