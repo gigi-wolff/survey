@@ -29,16 +29,16 @@ def error_message
   message == "" ? nil : message.chomp(',')
 end
 
-def valid_user?(username, password)
+def valid_user?
   # _FILE_ a reference to the current file name
   # File.expand_path('../users.yml', __FILE__) is a trick to get
   # the absolute path of a file when you know the path relative to the current file
   # File.expand_path = "/Users/Gigi/survey/users.yml"
   credentials = YAML.load_file( File.expand_path("../users.yml", __FILE__) ) #users.yml (hash) username: password
 
-  if credentials.key?(username)
-    bcrypt_password = BCrypt::Password.create(credentials[username]) # encrypt password in .yml file
-    bcrypt_password == password # compare it to password entered by user
+  if credentials.key?(params[:username])
+    bcrypt_password = BCrypt::Password.create(credentials[params[:username]]) # encrypt password in .yml file
+    bcrypt_password == params[:password] # compare it to password entered by user
   else
     false
   end
@@ -53,7 +53,8 @@ get "/user/signin" do
 end
 
 post "/user/signin" do
-  if valid_user?(params[:username], params[:password])
+  #if valid_user?(params[:username], params[:password])
+    if valid_user?
     session[:success] = "Signed In"
     redirect "/user_info"
   else
