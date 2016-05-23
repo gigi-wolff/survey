@@ -1,4 +1,4 @@
-<form method="post" action="/survey/update_review/<%= session[:last_name]%>">
+<form method="post" action="/survey/edit/<%= session[:last_name]%>">
 
   <p>How challenging did you find this assessment? (1=easy ... 5=difficult): 
     <input type="text" name="difficulty" maxlength="1" size="1" value=<%= params[:difficulty] || session[:difficulty] %>>
@@ -6,7 +6,7 @@
 
   <p><label for="comment">Please add your comments, <%= session[:first_name] %>: </label></p>
   <%# x = "abc" || nil  will set x to non-nil value, can't set value of textarea w/o using js %>
-  <textarea name="comment" cols="60" rows="10" ></textarea>
+  <textarea name="comment" cols="60" rows="10" ><%= params[:comment] || session[:comment] %></textarea>
   
   <p><button type="submit">Submit</button></p>
 </form>

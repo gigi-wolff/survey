@@ -7,9 +7,6 @@ require "tilt/erubis"
 require "yaml"
 require "bcrypt"
 
-# <input type="text"  maxlength="100" size="100" name="comment" value="<%= params[:comment] || session[:comment] %>" >
-
-
 configure do
   enable :sessions
   set :session_secret, 'secret'
@@ -24,7 +21,7 @@ def user_error_message
   message == "" ? nil : message.chomp(',')
 end
 
-def review_error_message
+def error_message
   message = ""
   message = "difficulty level between 1 through 5(hardest)," unless (1..5).cover?(params[:difficulty].to_i)
   message += " comment" if params[:comment] == ""
@@ -37,7 +34,6 @@ def valid_user?(username, password)
   # File.expand_path('../users.yml', __FILE__) is a trick to get
   # the absolute path of a file when you know the path relative to the current file
   # File.expand_path = "/Users/Gigi/survey/users.yml"
-  # credentials  = {"developer"=>"letmein,", "gigi"=>"whatnow"}
   credentials = YAML.load_file( File.expand_path("../users.yml", __FILE__) ) #users.yml (hash) username: password
 
   if credentials.key?(username)
@@ -78,67 +74,82 @@ post "/user_info" do
   if error
     session[:error] = "Please enter: #{error}"
     status 422
-    # Values of input fields should be set to params so we don't have to revalidate each them.
-    # If it is the first render, params[:first_name] is nil, so the field will be empty. 
-    # If it is a re-render, the field will be filled in if they filled it in and empty if they didn't. 
-    # This helps us to avoid having to write conditionals as it all comes for free by using params in that situation.
+    # Values of input fields should be set to params if they need to be
+    # validated. Now the user won't have to re-enter them if 
+    # the page is re-rendered because of an invalid input
     erb :user_info
   else
     session[:first_name] = params[:first_name]
     session[:last_name] = params[:last_name]
     # None of the variables created in this action
     # will be available to the redirected view unless they are saved in session
-    redirect "/survey/create_review/#{session[:last_name]}" #survey successfully created goto comment action
+    redirect "/survey/#{session[:last_name]}" #survey successfully created goto comment action
   end
 end
 
 # create new review -----------
-get "/survey/create_review/:last_name" do
-  erb :create_review
+get "/survey/:last_name" do
+  erb :create
 end
 
-post "/survey/create_review/:last_name" do
-  error = review_error_message
+post "/survey/:last_name" do
+  error = error_message
 
   if error
     session[:error] = "Please enter: #{error}"
     status 422
-    erb :create_review    
+    erb :create    
   else
     session[:comment] = params[:comment]
     session[:difficulty] = params[:difficulty]
-    redirect "/survey/show_review/#{session[:last_name]}"
+    redirect "/survey/show/#{session[:last_name]}"
   end
 end
 
 # show review (choose edit or save) -------------
-get "/survey/show_review/:last_name" do
-  erb :show_review
+get "/survey/show/:last_name" do
+  erb :show
 end
 
 # update review -------------------
-get "/survey/update_review/:last_name" do
-  erb :update_review
+get "/survey/edit/:last_name" do
+  erb :update
 end
 
-post "/survey/update_review/:last_name" do
-  error = review_error_message
+post "/survey/edit/:last_name" do
+  error = error_message
 
   if error
     session[:error] = "Please enter: #{error}"
     status 422
-    erb :update_review    
+    erb :update    
   else
     session[:comment] = params[:comment]
     session[:difficulty] = params[:difficulty]
     session[:success] = "The review has been updated."
-    redirect "/survey/show_review/#{session[:last_name]}"
+    redirect "/survey/show/#{session[:last_name]}"
   end
 end
 
 # save final review ------------
-get "/survey/save_review/:last_name" do
+post "/survey/save/:last_name" do
   session[:success] = "Your review has been saved."
-  erb :saved_review
+  erb :saved
 end
+
+# delete review --------------
+post "/survey/delete/:last_name" do
+  session[:comment] = nil
+  session[:difficulty] = nil
+  session[:success] = "The review has been deleted."
+  redirect "/survey/show/:last_name"
+end 
+
+
+
+
+
+
+
+
 

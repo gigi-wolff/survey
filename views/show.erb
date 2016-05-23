@@ -1,0 +1,16 @@
+  <p><h3> Your Survey Entries: </h3></p>
+
+  <p>Difficulty level:  <%= session[:difficulty] %></p>
+  <p>Comment: <%= session[:comment] %></p>
+
+  <form action="/survey/save/<%= session[:last_name] %>" method="post">
+     <button type="submit">Save</button>
+  </form>
+
+  <form action="/survey/edit/<%= session[:last_name] %>" method="get">
+     <button type="submit">Edit</button>
+  </form>
+
+  <form action="/survey/delete/<%= session[:last_name] %>" method="post">
+     <button type="submit">Delete</button>
+  </form>
